@@ -8,64 +8,96 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class LinearSensor extends AppCompatActivity implements SensorEventListener {
+import java.math.BigDecimal;
+
+public class LinearSensor extends AppCompatActivity implements SensorEventListener{
 
     private SensorManager sensorManager;
-    private Sensor linearSensor;
-    private float[] velocity = new float[]{0,0,0};
-    private float[] position = new float[]{0,0,0};
+    private Sensor accelerometer;
+    private Sensor magnetometer;
 
+    private float[] rotationMatrix = new float[9];
+    private float[] orientationAngles = new float[3];
 
+    private float[] accelerometerReading = new float[3];
+    private float[] magnetometerReading = new float[3];
 
+    private SensorEventListener sensorEventListenerAccelerometer;
+    private SensorEventListener sensorEventListenerMagnetometer;
+
+    TextView tv2;
+    ImageView iv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_linear_sensor);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        linearSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        if (linearSensor != null) {
-            sensorManager.registerListener(this, linearSensor,
+        tv2 = findViewById(R.id.textView2);
+        iv = findViewById(R.id.imageView);
+
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null){
+            sensorManager.registerListener(this, accelerometer,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
+        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        if (magnetometer != null) {
+            sensorManager.registerListener(this, magnetometer,
+                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+        }
+
+    }
+
+    public void resetButton(View view){
+        iv.setRotation(180);
+    }
+
+    // Compute the three orientation angles based on the most recent readings from
+    // the device's accelerometer and magnetometer.
+    public void updateOrientationAngles() {
+        // Update rotation matrix, which is needed to update orientation angles.
+        SensorManager.getRotationMatrix(rotationMatrix, null,
+                accelerometerReading, magnetometerReading);
+
+        // "rotationMatrix" now has up-to-date information.
+        SensorManager.getOrientation(rotationMatrix, orientationAngles);
+        // "orientationAngles" now has up-to-date information.
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
-            float x = sensorEvent.values[0];
-            float y = sensorEvent.values[1];
-            float z = sensorEvent.values[2];
-            String sensorValues = ("X: " + x + "Y: " + y + "Z: " + z);
-//            velocity[0] += x;
-//            velocity[1] += y;
-//            velocity[2] += z;
-            position[0] += x/2;
-            position[1] += y/2;
-            position[2] += z/2;
-            TextView textview = findViewById(R.id.textView2);
-            textview.setText(getPosition());
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            accelerometerReading = sensorEvent.values;
         }
-    }
-
-    private String getPosition(){
-        String pos = ("X:" + position[0] + " Y: " + position[1] + " Z: " + position[2]);
-        return pos;
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+            magnetometerReading = sensorEvent.values;
+        }
+        updateOrientationAngles();
+        iv.setRotation((float) (orientationAngles[0]*180/Math.PI));
+        tv2.setText("Azimuth:"+(orientationAngles[0]*180/Math.PI));
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-        return;
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        linearSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        if (linearSensor != null) {
-            sensorManager.registerListener(this, linearSensor,
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null){
+            sensorManager.registerListener(this, accelerometer,
+                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+        }
+        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        if (magnetometer != null) {
+            sensorManager.registerListener(this, magnetometer,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
     }
@@ -75,5 +107,19 @@ public class LinearSensor extends AppCompatActivity implements SensorEventListen
         super.onPause();
         // Don't receive any more updates from either sensor.
         sensorManager.unregisterListener(this);
+    }
+
+    /**
+     * Round to certain number of decimals
+     * https://stackoverflow.com/questions/8911356/whats-the-best-practice-to-round-a-float-to-2-decimals
+     *
+     * @param d
+     * @param decimalPlace
+     * @return
+     */
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }
