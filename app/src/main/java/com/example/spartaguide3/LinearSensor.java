@@ -14,6 +14,10 @@ public class LinearSensor extends AppCompatActivity implements SensorEventListen
 
     private SensorManager sensorManager;
     private Sensor linearSensor;
+    private float[] velocity = new float[]{0,0,0};
+    private float[] position = new float[]{0,0,0};
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +25,7 @@ public class LinearSensor extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_linear_sensor);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         linearSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
         if (linearSensor != null) {
             sensorManager.registerListener(this, linearSensor,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
@@ -34,9 +39,20 @@ public class LinearSensor extends AppCompatActivity implements SensorEventListen
             float y = sensorEvent.values[1];
             float z = sensorEvent.values[2];
             String sensorValues = ("X: " + x + "Y: " + y + "Z: " + z);
+//            velocity[0] += x;
+//            velocity[1] += y;
+//            velocity[2] += z;
+            position[0] += x/2;
+            position[1] += y/2;
+            position[2] += z/2;
             TextView textview = findViewById(R.id.textView2);
-            textview.setText(sensorValues);
+            textview.setText(getPosition());
         }
+    }
+
+    private String getPosition(){
+        String pos = ("X:" + position[0] + " Y: " + position[1] + " Z: " + position[2]);
+        return pos;
     }
 
     @Override
