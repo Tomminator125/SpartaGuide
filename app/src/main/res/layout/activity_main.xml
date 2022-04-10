@@ -46,4 +46,14 @@
         app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/LocationRequestButton"
+        android:layout_width="273dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="36dp"
+        android:text="Request Location Permision"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
