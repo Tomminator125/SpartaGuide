@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.spartaguide3">
+    package="com.example.spartaguide3" >
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -11,7 +11,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SpartaGuide3">
+        android:theme="@style/Theme.SpartaGuide3" >
+        <activity
+            android:name=".Host"
+            android:exported="false" />
+        <activity
+            android:name=".Visitor"
+            android:exported="false" />
         <activity
             android:name=".FusedLocationProvider"
             android:exported="false" />
@@ -20,7 +26,7 @@
             android:exported="false" />
         <activity
             android:name=".DisplayMessageActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity" >
 
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
@@ -29,7 +35,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

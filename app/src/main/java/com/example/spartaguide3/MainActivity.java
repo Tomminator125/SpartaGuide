@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     private int FINE_LOCATION_PERMISSION_CODE = 1;
 
+    Button host, visitor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        host = findViewById(R.id.button_host);
+        visitor = findViewById(R.id.button_visitor);
     }
 
     private void requestFineLocationPermission() {
@@ -77,6 +80,21 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void gotoHost(View view){
+//        if (ContextCompat.checkSelfPermission(MainActivity.this,
+//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            Intent intent = new Intent(this, Host.class);
+            startActivity(intent);
+//        } else {
+//            requestFineLocationPermission();
+//        }
+    }
+
+    public void gotoVisitor(View view){
+        Intent intent = new Intent(this, Visitor.class);
+        startActivity(intent);
     }
 
     /** Called when the user taps the Send button */
